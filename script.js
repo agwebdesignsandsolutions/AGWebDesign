@@ -1,6 +1,6 @@
-/* ===== AG Web Design Portfolio - Main Script ===== */
-
+/* ===== AG Web Design Portfolio 2 - Main Script ===== */
 document.addEventListener('DOMContentLoaded', () => {
+
   // --- Theme Toggle ---
   const themeToggle = document.getElementById('themeToggle');
   const html = document.documentElement;
@@ -8,64 +8,74 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (savedTheme === 'dark') {
     html.setAttribute('data-theme', 'dark');
-    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+    if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
   }
 
-  themeToggle.addEventListener('click', () => {
-    const isDark = html.getAttribute('data-theme') === 'dark';
-    if (isDark) {
-      html.removeAttribute('data-theme');
-      localStorage.setItem('theme', 'light');
-      themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-    } else {
-      html.setAttribute('data-theme', 'dark');
-      localStorage.setItem('theme', 'dark');
-      themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-    }
-  });
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      if (isDark) {
+        html.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'light');
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+      } else {
+        html.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+      }
+    });
+  }
 
   // --- Mobile Navigation ---
   const hamburger = document.getElementById('hamburger');
   const navLinks = document.getElementById('navLinks');
 
-  hamburger.addEventListener('click', () => {
-    hamburger.classList.toggle('active');
-    navLinks.classList.toggle('open');
-  });
-
-  // Close mobile menu on link click
-  navLinks.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-      hamburger.classList.remove('active');
-      navLinks.classList.remove('open');
+  if (hamburger && navLinks) {
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('active');
+      navLinks.classList.toggle('open');
     });
-  });
+
+    // Close mobile menu on link click
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        hamburger.classList.remove('active');
+        navLinks.classList.remove('open');
+      });
+    });
+  }
 
   // --- Sticky Navbar ---
   const navbar = document.getElementById('navbar');
   window.addEventListener('scroll', () => {
-    if (window.scrollY > 50) {
-      navbar.classList.add('scrolled');
-    } else {
-      navbar.classList.remove('scrolled');
+    if (navbar) {
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
     }
   });
 
   // --- Back to Top ---
   const backToTop = document.getElementById('backToTop');
   window.addEventListener('scroll', () => {
-    if (window.scrollY > 400) {
-      backToTop.classList.add('visible');
-      document.body.classList.add('has-scroll');
-    } else {
-      backToTop.classList.remove('visible');
-      document.body.classList.remove('has-scroll');
+    if (backToTop) {
+      if (window.scrollY > 400) {
+        backToTop.classList.add('visible');
+        document.body.classList.add('has-scroll');
+      } else {
+        backToTop.classList.remove('visible');
+        document.body.classList.remove('has-scroll');
+      }
     }
   });
 
-  backToTop.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
+  if (backToTop) {
+    backToTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
 
   // --- Animated Counters ---
   const counters = document.querySelectorAll('.stat-number');
@@ -78,7 +88,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const duration = 2000;
       const step = target / (duration / 16);
       let current = 0;
-
       const update = () => {
         current += step;
         if (current < target) {
@@ -93,16 +102,13 @@ document.addEventListener('DOMContentLoaded', () => {
     countersAnimated = true;
   }
 
-  // --- Scroll Animations (Intersection Observer) ---
+  // --- Scroll Animations ---
   const fadeElements = document.querySelectorAll('.fade-in');
-
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
-
-        // Trigger counters when hero stats are visible
-        if (entry.target.classList.contains('hero-stats') || 
+        if (entry.target.classList.contains('hero-stats') ||
             entry.target.querySelector?.('.stat-number')) {
           animateCounters();
         }
@@ -112,7 +118,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   fadeElements.forEach(el => observer.observe(el));
 
-  // Also observe hero stats specifically
   const heroStats = document.querySelector('.hero-stats');
   if (heroStats) {
     const statsObserver = new IntersectionObserver((entries) => {
@@ -129,9 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => {
       filterBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-
       const filter = btn.getAttribute('data-filter');
-
       portfolioCards.forEach(card => {
         if (filter === 'all' || card.getAttribute('data-category') === filter) {
           card.classList.remove('hidden');
@@ -144,92 +147,108 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Testimonials Slider ---
   const track = document.getElementById('testimonialTrack');
-  const cards = track.querySelectorAll('.testimonial-card');
   const prevBtn = document.getElementById('prevTestimonial');
   const nextBtn = document.getElementById('nextTestimonial');
-  let currentSlide = 0;
-  const totalSlides = cards.length;
 
-  function goToSlide(index) {
-    if (index < 0) index = totalSlides - 1;
-    if (index >= totalSlides) index = 0;
-    currentSlide = index;
-    track.style.transform = `translateX(-${currentSlide * 100}%)`;
+  if (track && prevBtn && nextBtn) {
+    const cards = track.querySelectorAll('.testimonial-card');
+    let currentSlide = 0;
+    const totalSlides = cards.length;
+
+    function goToSlide(index) {
+      if (index < 0) index = totalSlides - 1;
+      if (index >= totalSlides) index = 0;
+      currentSlide = index;
+      track.style.transform = `translateX(-${currentSlide * 100}%)`;
+    }
+
+    prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
+    nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
+
+    // Auto-advance
+    setInterval(() => goToSlide(currentSlide + 1), 6000);
   }
-
-  prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
-  nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
-
-  // Auto-advance testimonials
-  setInterval(() => goToSlide(currentSlide + 1), 6000);
 
   // --- FAQ Accordion ---
   const faqItems = document.querySelectorAll('.faq-item');
-
   faqItems.forEach(item => {
     const question = item.querySelector('.faq-question');
-    question.addEventListener('click', () => {
-      const isActive = item.classList.contains('active');
-      // Close all
-      faqItems.forEach(i => i.classList.remove('active'));
-      // Open clicked if it wasn't active
-      if (!isActive) item.classList.add('active');
-    });
+    if (question) {
+      question.addEventListener('click', () => {
+        const isActive = item.classList.contains('active');
+        faqItems.forEach(i => i.classList.remove('active'));
+        if (!isActive) item.classList.add('active');
+      });
+    }
   });
 
-  // --- Contact Form ---
+  // --- Contact Form (Local) ---
   const contactForm = document.getElementById('contactForm');
+  const messageBox = document.getElementById('formMessage');
 
-  contactForm.addEventListener('submit', (e) => {
-    e.preventDefault();
+  if (contactForm) {
+    contactForm.addEventListener('submit', (e) => {
+      e.preventDefault();
 
-    // Basic validation
-    const name = document.getElementById('name').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const message = document.getElementById('message').value.trim();
+      const name = contactForm.name.value.trim();
+      const email = contactForm.email.value.trim();
+      const message = contactForm.message.value.trim();
+      const business = contactForm.business.value.trim();
+      const phone = contactForm.phone.value.trim();
+      const services = contactForm.services.value;
 
-    if (!name || !email || !message) {
-      alert('Please fill in all required fields.');
+      // Validation
+      if (!name || !email || !message) {
+        showFormMessage('Please fill in all required fields (Name, Email, and Message).', 'error');
+        return;
+      }
+
+      // Log data (for testing)
+      console.log('Form submitted:', { name, business, email, phone, services, message });
+
+      // Button loading state
+      const submitBtn = contactForm.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = 'Sending...';
+      submitBtn.disabled = true;
+
+      // Simulate sending
+      setTimeout(() => {
+        showFormMessage('Thank you! Your message has been received. We’ll get back to you within 24 hours.', 'success');
+        contactForm.reset();
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      }, 1000);
+    });
+  }
+
+  function showFormMessage(text, type) {
+    if (!messageBox) {
+      alert(text);
       return;
     }
 
-    // Simulate form submission (replace with EmailJS or backend)
-    const submitBtn = contactForm.querySelector('button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    submitBtn.textContent = 'Sending...';
-    submitBtn.disabled = true;
+    messageBox.style.display = 'block';
+    messageBox.textContent = text;
 
+    if (type === 'success') {
+      messageBox.style.background = '#ecfdf5';
+      messageBox.style.color = '#065f46';
+      messageBox.style.border = '1px solid #a7f3d0';
+    } else {
+      messageBox.style.background = '#fef2f2';
+      messageBox.style.color = '#991b1b';
+      messageBox.style.border = '1px solid #fecaca';
+    }
+
+    // Auto-hide after 6 seconds
     setTimeout(() => {
-      submitBtn.textContent = 'Message Sent! ✓';
-      submitBtn.style.background = '#16a34a';
-      contactForm.reset();
+      messageBox.style.display = 'none';
+      messageBox.textContent = '';
+    }, 6000);
+  }
 
-      setTimeout(() => {
-        submitBtn.textContent = originalText;
-        submitBtn.style.background = '';
-        submitBtn.disabled = false;
-      }, 3000);
-    }, 1200);
-
-    /*
-    // EmailJS Integration Example:
-    // 1. Include EmailJS SDK: <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    // 2. Init: emailjs.init("YOUR_PUBLIC_KEY");
-    // 3. Send:
-    emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
-      from_name: name,
-      from_email: email,
-      business: document.getElementById('business').value,
-      phone: document.getElementById('phone').value,
-      services: document.getElementById('services').value,
-      message: message
-    }).then(() => {
-      // success
-    });
-    */
-  });
-
-  // --- Smooth scroll for anchor links (offset for fixed nav) ---
+  // --- Smooth scroll for anchor links ---
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
       const targetId = this.getAttribute('href');
@@ -243,4 +262,5 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
 });
