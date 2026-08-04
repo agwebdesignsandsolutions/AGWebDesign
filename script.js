@@ -1,177 +1,259 @@
-/* ===== AG Web Design Portfolio - Main Script ===== */
-document.addEventListener('DOMContentLoaded', () => {
+// ============================================
+// AG Web Design - Main Script
+// ============================================
 
-  // --- Theme Toggle ---
-  const themeToggle = document.getElementById('themeToggle');
-  const html = document.documentElement;
-  const savedTheme = localStorage.getItem('theme') || 'light';
+document.addEventListener('DOMContentLoaded', function () {
 
-  if (savedTheme === 'dark') {
-    html.setAttribute('data-theme', 'dark');
-    if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-  }
+  // ---------- 1. CONTACT FORM (Local) ----------
+  const form = document.getElementById('contactForm');
+  const messageBox = document.getElementById('formMessage');
 
-  if (themeToggle) {
-    themeToggle.addEventListener('click', () => {
-      const isDark = html.getAttribute('data-theme') === 'dark';
-      if (isDark) {
-        html.removeAttribute('data-theme');
-        localStorage.setItem('theme', 'light');
-        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-      } else {
-        html.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', 'dark');
-        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const data = {
+        name: form.name.value.trim(),
+        business: form.business.value.trim(),
+        email: form.email.value.trim(),
+        phone: form.phone.value.trim(),
+        services: form.services.value,
+        message: form.message.value.trim()
+      };
+
+      // Validation
+      if (!data.name || !data.email || !data.message) {
+        showFormMessage('Please fill in all required fields (Name, Email, and Message).', 'error');
+        return;
       }
+
+      // Log for testing
+      console.log('Form submitted:', data);
+
+      // Success message
+      showFormMessage('Thank you! Your message has been received. We’ll get back to you within 24 hours.', 'success');
+
+      // Optional: open email client (uncomment if you want this)
+      /*
+      const subject = encodeURIComponent('New Quote Request from ' + data.name);
+      const body = encodeURIComponent(
+        `Name: ${data.name}\n` +
+        `Business: ${data.business || 'N/A'}\n` +
+        `Email: ${data.email}\n` +
+        `Phone: ${data.phone || 'N/A'}\n` +
+        `Service: ${data.services || 'Not specified'}\n\n` +
+        `Message:\n${data.message}`
+      );
+      window.location.href = `mailto:AAGilreath@student.fullsail.edu?subject=${subject}&body=${body}`;
+      */
+
+      form.reset();
     });
   }
 
-  // --- Mobile Navigation ---
+  function showFormMessage(text, type) {
+    if (!messageBox) return;
+
+    messageBox.style.display = 'block';
+    messageBox.textContent = text;
+
+    if (type === 'success') {
+      messageBox.style.background = '#ecfdf5';
+      messageBox.style.color = '#065f46';
+      messageBox.style.border = '1px solid #a7f3d0';
+    } else {
+      messageBox.style.background = '#fef2f2';
+      messageBox.style.color = '#991b1b';
+      messageBox.style.border = '1px solid #fecaca';
+    }
+
+    // Auto-hide after 6 seconds
+    setTimeout(() => {
+      messageBox.style.display = 'none';
+      messageBox.textContent = '';
+    }, 6000);
+  }
+
+  // ---------- 2. MOBILE NAV (Hamburger) ----------
   const hamburger = document.getElementById('hamburger');
   const navLinks = document.getElementById('navLinks');
 
   if (hamburger && navLinks) {
-    hamburger.addEventListener('click', () => {
+    hamburger.addEventListener('click', function () {
+      navLinks.classList.toggle('active');
       hamburger.classList.toggle('active');
-      navLinks.classList.toggle('open');
     });
 
-    // Close mobile menu on link click
+    // Close menu when a link is clicked
     navLinks.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
+        navLinks.classList.remove('active');
         hamburger.classList.remove('active');
-        navLinks.classList.remove('open');
       });
     });
   }
 
-  // --- Sticky Navbar ---
+  // ---------- 3. DARK / LIGHT THEME TOGGLE ----------
+  const themeToggle = document.getElementById('themeToggle');
+
+  if (themeToggle) {
+    // Load saved theme
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+      themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+    }
+
+    themeToggle.addEventListener('click', function () {
+      document.body.classList.toggle('dark-mode');
+
+      if (document.body.classList.contains('dark-mode')) {
+        localStorage.setItem('theme', 'dark');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+      } else {
+        localStorage.setItem('theme', 'light');
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+      }
+    });
+  }
+
+  // ---------- 4. BACK TO TOP BUTTON ----------
+  const backToTop = document.getElementById('backToTop');
+
+  if (backToTop) {
+    window.addEventListener('scroll', function () {
+      if (window.scrollY > 400) {
+        backToTop.classList.add('show');
+      } else {
+        backToTop.classList.remove('show');
+      }
+    });
+
+    backToTop.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  // ---------- 5. NAVBAR SCROLL EFFECT ----------
   const navbar = document.getElementById('navbar');
-  window.addEventListener('scroll', () => {
-    if (navbar) {
+
+  if (navbar) {
+    window.addEventListener('scroll', function () {
       if (window.scrollY > 50) {
         navbar.classList.add('scrolled');
       } else {
         navbar.classList.remove('scrolled');
       }
-    }
-  });
-
-  // --- Back to Top ---
-  const backToTop = document.getElementById('backToTop');
-  window.addEventListener('scroll', () => {
-    if (backToTop) {
-      if (window.scrollY > 400) {
-        backToTop.classList.add('visible');
-        document.body.classList.add('has-scroll');
-      } else {
-        backToTop.classList.remove('visible');
-        document.body.classList.remove('has-scroll');
-      }
-    }
-  });
-
-  if (backToTop) {
-    backToTop.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
 
-  // --- Animated Counters ---
-  const counters = document.querySelectorAll('.stat-number');
-  let countersAnimated = false;
-
-  function animateCounters() {
-    if (countersAnimated) return;
-    counters.forEach(counter => {
-      const target = +counter.getAttribute('data-target');
-      const duration = 2000;
-      const step = target / (duration / 16);
-      let current = 0;
-      const update = () => {
-        current += step;
-        if (current < target) {
-          counter.textContent = Math.floor(current);
-          requestAnimationFrame(update);
-        } else {
-          counter.textContent = target;
-        }
-      };
-      update();
-    });
-    countersAnimated = true;
-  }
-
-  // --- Scroll Animations (Intersection Observer) ---
-  const fadeElements = document.querySelectorAll('.fade-in');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        // Trigger counters when hero stats are visible
-        if (entry.target.classList.contains('hero-stats') ||
-            entry.target.querySelector?.('.stat-number')) {
-          animateCounters();
-        }
-      }
-    });
-  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
-
-  fadeElements.forEach(el => observer.observe(el));
-
-  // Also observe hero stats specifically
-  const heroStats = document.querySelector('.hero-stats');
-  if (heroStats) {
-    const statsObserver = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) animateCounters();
-    }, { threshold: 0.5 });
-    statsObserver.observe(heroStats);
-  }
-
-  // --- Portfolio Filtering ---
+  // ---------- 6. PORTFOLIO FILTERS ----------
   const filterBtns = document.querySelectorAll('.filter-btn');
   const portfolioCards = document.querySelectorAll('.portfolio-card');
 
   filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', function () {
+      // Active state
       filterBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const filter = btn.getAttribute('data-filter');
+      this.classList.add('active');
+
+      const filter = this.getAttribute('data-filter');
+
       portfolioCards.forEach(card => {
         if (filter === 'all' || card.getAttribute('data-category') === filter) {
-          card.classList.remove('hidden');
+          card.style.display = 'block';
         } else {
-          card.classList.add('hidden');
+          card.style.display = 'none';
         }
       });
     });
   });
 
-  // --- Testimonials Slider ---
+  // ---------- 7. TESTIMONIALS SLIDER ----------
   const track = document.getElementById('testimonialTrack');
   const prevBtn = document.getElementById('prevTestimonial');
   const nextBtn = document.getElementById('nextTestimonial');
 
   if (track && prevBtn && nextBtn) {
+    let currentIndex = 0;
     const cards = track.querySelectorAll('.testimonial-card');
-    let currentSlide = 0;
-    const totalSlides = cards.length;
+    const total = cards.length;
 
-    function goToSlide(index) {
-      if (index < 0) index = totalSlides - 1;
-      if (index >= totalSlides) index = 0;
-      currentSlide = index;
-      track.style.transform = `translateX(-${currentSlide * 100}%)`;
+    function updateSlider() {
+      track.style.transform = `translateX(-${currentIndex * 100}%)`;
     }
 
-    prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
-    nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
+    nextBtn.addEventListener('click', function () {
+      currentIndex = (currentIndex + 1) % total;
+      updateSlider();
+    });
 
-    // Auto-advance testimonials
-    setInterval(() => goToSlide(currentSlide + 1), 6000);
+    prevBtn.addEventListener('click', function () {
+      currentIndex = (currentIndex - 1 + total) % total;
+      updateSlider();
+    });
   }
 
-  // --- FAQ Accordion ---
-  const faqItems = document.querySelectorAll('.faq-item');
-  faqItems.forEach(item => {
-    const question = item.query
+  // ---------- 8. FAQ ACCORDION ----------
+  const faqQuestions = document.querySelectorAll('.faq-question');
+
+  faqQuestions.forEach(question => {
+    question.addEventListener('click', function () {
+      const item = this.parentElement;
+      const isOpen = item.classList.contains('active');
+
+      // Close all
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+
+      // Open clicked one (if it was closed)
+      if (!isOpen) {
+        item.classList.add('active');
+      }
+    });
+  });
+
+  // ---------- 9. STATS COUNTER ----------
+  const statNumbers = document.querySelectorAll('.stat-number');
+
+  function animateCounter(el) {
+    const target = parseInt(el.getAttribute('data-target'));
+    let current = 0;
+    const increment = target / 50;
+
+    const timer = setInterval(() => {
+      current += increment;
+      if (current >= target) {
+        el.textContent = target;
+        clearInterval(timer);
+      } else {
+        el.textContent = Math.floor(current);
+      }
+    }, 30);
+  }
+
+  // Trigger counters when they come into view
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        animateCounter(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  statNumbers.forEach(stat => observer.observe(stat));
+
+  // ---------- 10. FADE-IN ON SCROLL ----------
+  const fadeElements = document.querySelectorAll('.fade-in');
+
+  const fadeObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        fadeObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  fadeElements.forEach(el => fadeObserver.observe(el));
+
+});
