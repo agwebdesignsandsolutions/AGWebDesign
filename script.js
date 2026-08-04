@@ -1,259 +1,246 @@
-// ============================================
-// AG Web Design - Main Script
-// ============================================
+/* ===== AG Web Design Portfolio - Main Script ===== */
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
+  // --- Theme Toggle ---
+  const themeToggle = document.getElementById('themeToggle');
+  const html = document.documentElement;
+  const savedTheme = localStorage.getItem('theme') || 'light';
 
-  // ---------- 1. CONTACT FORM (Local) ----------
-  const form = document.getElementById('contactForm');
-  const messageBox = document.getElementById('formMessage');
-
-  if (form) {
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      const data = {
-        name: form.name.value.trim(),
-        business: form.business.value.trim(),
-        email: form.email.value.trim(),
-        phone: form.phone.value.trim(),
-        services: form.services.value,
-        message: form.message.value.trim()
-      };
-
-      // Validation
-      if (!data.name || !data.email || !data.message) {
-        showFormMessage('Please fill in all required fields (Name, Email, and Message).', 'error');
-        return;
-      }
-
-      // Log for testing
-      console.log('Form submitted:', data);
-
-      // Success message
-      showFormMessage('Thank you! Your message has been received. We’ll get back to you within 24 hours.', 'success');
-
-      // Optional: open email client (uncomment if you want this)
-      /*
-      const subject = encodeURIComponent('New Quote Request from ' + data.name);
-      const body = encodeURIComponent(
-        `Name: ${data.name}\n` +
-        `Business: ${data.business || 'N/A'}\n` +
-        `Email: ${data.email}\n` +
-        `Phone: ${data.phone || 'N/A'}\n` +
-        `Service: ${data.services || 'Not specified'}\n\n` +
-        `Message:\n${data.message}`
-      );
-      window.location.href = `mailto:AAGilreath@student.fullsail.edu?subject=${subject}&body=${body}`;
-      */
-
-      form.reset();
-    });
+  if (savedTheme === 'dark') {
+    html.setAttribute('data-theme', 'dark');
+    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
   }
 
-  function showFormMessage(text, type) {
-    if (!messageBox) return;
-
-    messageBox.style.display = 'block';
-    messageBox.textContent = text;
-
-    if (type === 'success') {
-      messageBox.style.background = '#ecfdf5';
-      messageBox.style.color = '#065f46';
-      messageBox.style.border = '1px solid #a7f3d0';
+  themeToggle.addEventListener('click', () => {
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      html.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+      themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
     } else {
-      messageBox.style.background = '#fef2f2';
-      messageBox.style.color = '#991b1b';
-      messageBox.style.border = '1px solid #fecaca';
+      html.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+      themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
     }
+  });
 
-    // Auto-hide after 6 seconds
-    setTimeout(() => {
-      messageBox.style.display = 'none';
-      messageBox.textContent = '';
-    }, 6000);
-  }
-
-  // ---------- 2. MOBILE NAV (Hamburger) ----------
+  // --- Mobile Navigation ---
   const hamburger = document.getElementById('hamburger');
   const navLinks = document.getElementById('navLinks');
 
-  if (hamburger && navLinks) {
-    hamburger.addEventListener('click', function () {
-      navLinks.classList.toggle('active');
-      hamburger.classList.toggle('active');
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('active');
+    navLinks.classList.toggle('open');
+  });
+
+  // Close mobile menu on link click
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      hamburger.classList.remove('active');
+      navLinks.classList.remove('open');
     });
+  });
 
-    // Close menu when a link is clicked
-    navLinks.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        navLinks.classList.remove('active');
-        hamburger.classList.remove('active');
-      });
-    });
-  }
-
-  // ---------- 3. DARK / LIGHT THEME TOGGLE ----------
-  const themeToggle = document.getElementById('themeToggle');
-
-  if (themeToggle) {
-    // Load saved theme
-    if (localStorage.getItem('theme') === 'dark') {
-      document.body.classList.add('dark-mode');
-      themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-    }
-
-    themeToggle.addEventListener('click', function () {
-      document.body.classList.toggle('dark-mode');
-
-      if (document.body.classList.contains('dark-mode')) {
-        localStorage.setItem('theme', 'dark');
-        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-      } else {
-        localStorage.setItem('theme', 'light');
-        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-      }
-    });
-  }
-
-  // ---------- 4. BACK TO TOP BUTTON ----------
-  const backToTop = document.getElementById('backToTop');
-
-  if (backToTop) {
-    window.addEventListener('scroll', function () {
-      if (window.scrollY > 400) {
-        backToTop.classList.add('show');
-      } else {
-        backToTop.classList.remove('show');
-      }
-    });
-
-    backToTop.addEventListener('click', function () {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  }
-
-  // ---------- 5. NAVBAR SCROLL EFFECT ----------
+  // --- Sticky Navbar ---
   const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
+  });
 
-  if (navbar) {
-    window.addEventListener('scroll', function () {
-      if (window.scrollY > 50) {
-        navbar.classList.add('scrolled');
-      } else {
-        navbar.classList.remove('scrolled');
-      }
+  // --- Back to Top ---
+  const backToTop = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 400) {
+      backToTop.classList.add('visible');
+      document.body.classList.add('has-scroll');
+    } else {
+      backToTop.classList.remove('visible');
+      document.body.classList.remove('has-scroll');
+    }
+  });
+
+  backToTop.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // --- Animated Counters ---
+  const counters = document.querySelectorAll('.stat-number');
+  let countersAnimated = false;
+
+  function animateCounters() {
+    if (countersAnimated) return;
+    counters.forEach(counter => {
+      const target = +counter.getAttribute('data-target');
+      const duration = 2000;
+      const step = target / (duration / 16);
+      let current = 0;
+
+      const update = () => {
+        current += step;
+        if (current < target) {
+          counter.textContent = Math.floor(current);
+          requestAnimationFrame(update);
+        } else {
+          counter.textContent = target;
+        }
+      };
+      update();
     });
+    countersAnimated = true;
   }
 
-  // ---------- 6. PORTFOLIO FILTERS ----------
+  // --- Scroll Animations (Intersection Observer) ---
+  const fadeElements = document.querySelectorAll('.fade-in');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+
+        // Trigger counters when hero stats are visible
+        if (entry.target.classList.contains('hero-stats') || 
+            entry.target.querySelector?.('.stat-number')) {
+          animateCounters();
+        }
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+  fadeElements.forEach(el => observer.observe(el));
+
+  // Also observe hero stats specifically
+  const heroStats = document.querySelector('.hero-stats');
+  if (heroStats) {
+    const statsObserver = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) animateCounters();
+    }, { threshold: 0.5 });
+    statsObserver.observe(heroStats);
+  }
+
+  // --- Portfolio Filtering ---
   const filterBtns = document.querySelectorAll('.filter-btn');
   const portfolioCards = document.querySelectorAll('.portfolio-card');
 
   filterBtns.forEach(btn => {
-    btn.addEventListener('click', function () {
-      // Active state
+    btn.addEventListener('click', () => {
       filterBtns.forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
+      btn.classList.add('active');
 
-      const filter = this.getAttribute('data-filter');
+      const filter = btn.getAttribute('data-filter');
 
       portfolioCards.forEach(card => {
         if (filter === 'all' || card.getAttribute('data-category') === filter) {
-          card.style.display = 'block';
+          card.classList.remove('hidden');
         } else {
-          card.style.display = 'none';
+          card.classList.add('hidden');
         }
       });
     });
   });
 
-  // ---------- 7. TESTIMONIALS SLIDER ----------
+  // --- Testimonials Slider ---
   const track = document.getElementById('testimonialTrack');
+  const cards = track.querySelectorAll('.testimonial-card');
   const prevBtn = document.getElementById('prevTestimonial');
   const nextBtn = document.getElementById('nextTestimonial');
+  let currentSlide = 0;
+  const totalSlides = cards.length;
 
-  if (track && prevBtn && nextBtn) {
-    let currentIndex = 0;
-    const cards = track.querySelectorAll('.testimonial-card');
-    const total = cards.length;
-
-    function updateSlider() {
-      track.style.transform = `translateX(-${currentIndex * 100}%)`;
-    }
-
-    nextBtn.addEventListener('click', function () {
-      currentIndex = (currentIndex + 1) % total;
-      updateSlider();
-    });
-
-    prevBtn.addEventListener('click', function () {
-      currentIndex = (currentIndex - 1 + total) % total;
-      updateSlider();
-    });
+  function goToSlide(index) {
+    if (index < 0) index = totalSlides - 1;
+    if (index >= totalSlides) index = 0;
+    currentSlide = index;
+    track.style.transform = `translateX(-${currentSlide * 100}%)`;
   }
 
-  // ---------- 8. FAQ ACCORDION ----------
-  const faqQuestions = document.querySelectorAll('.faq-question');
+  prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
+  nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
 
-  faqQuestions.forEach(question => {
-    question.addEventListener('click', function () {
-      const item = this.parentElement;
-      const isOpen = item.classList.contains('active');
+  // Auto-advance testimonials
+  setInterval(() => goToSlide(currentSlide + 1), 6000);
 
+  // --- FAQ Accordion ---
+  const faqItems = document.querySelectorAll('.faq-item');
+
+  faqItems.forEach(item => {
+    const question = item.querySelector('.faq-question');
+    question.addEventListener('click', () => {
+      const isActive = item.classList.contains('active');
       // Close all
-      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
-
-      // Open clicked one (if it was closed)
-      if (!isOpen) {
-        item.classList.add('active');
-      }
+      faqItems.forEach(i => i.classList.remove('active'));
+      // Open clicked if it wasn't active
+      if (!isActive) item.classList.add('active');
     });
   });
 
-  // ---------- 9. STATS COUNTER ----------
-  const statNumbers = document.querySelectorAll('.stat-number');
+  // --- Contact Form ---
+  const contactForm = document.getElementById('contactForm');
 
-  function animateCounter(el) {
-    const target = parseInt(el.getAttribute('data-target'));
-    let current = 0;
-    const increment = target / 50;
+  contactForm.addEventListener('submit', (e) => {
+    e.preventDefault();
 
-    const timer = setInterval(() => {
-      current += increment;
-      if (current >= target) {
-        el.textContent = target;
-        clearInterval(timer);
-      } else {
-        el.textContent = Math.floor(current);
-      }
-    }, 30);
-  }
+    // Basic validation
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const message = document.getElementById('message').value.trim();
 
-  // Trigger counters when they come into view
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        animateCounter(entry.target);
-        observer.unobserve(entry.target);
+    if (!name || !email || !message) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+
+    // Simulate form submission (replace with EmailJS or backend)
+    const submitBtn = contactForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Sending...';
+    submitBtn.disabled = true;
+
+    setTimeout(() => {
+      submitBtn.textContent = 'Message Sent! ✓';
+      submitBtn.style.background = '#16a34a';
+      contactForm.reset();
+
+      setTimeout(() => {
+        submitBtn.textContent = originalText;
+        submitBtn.style.background = '';
+        submitBtn.disabled = false;
+      }, 3000);
+    }, 1200);
+
+    /*
+    // EmailJS Integration Example:
+    // 1. Include EmailJS SDK: <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    // 2. Init: emailjs.init("YOUR_PUBLIC_KEY");
+    // 3. Send:
+    emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+      from_name: name,
+      from_email: email,
+      business: document.getElementById('business').value,
+      phone: document.getElementById('phone').value,
+      services: document.getElementById('services').value,
+      message: message
+    }).then(() => {
+      // success
+    });
+    */
+  });
+
+  // --- Smooth scroll for anchor links (offset for fixed nav) ---
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      const targetId = this.getAttribute('href');
+      if (targetId === '#') return;
+      const target = document.querySelector(targetId);
+      if (target) {
+        e.preventDefault();
+        const offset = 80;
+        const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
       }
     });
-  }, { threshold: 0.5 });
-
-  statNumbers.forEach(stat => observer.observe(stat));
-
-  // ---------- 10. FADE-IN ON SCROLL ----------
-  const fadeElements = document.querySelectorAll('.fade-in');
-
-  const fadeObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        fadeObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.15 });
-
-  fadeElements.forEach(el => fadeObserver.observe(el));
-
+  });
 });
